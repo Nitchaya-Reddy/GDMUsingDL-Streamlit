@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDM Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #results {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GDM Prediction</h1>
+    <form id="input-form">
+        <label for="Age">Age:</label>
+        <input type="number" id="Age" name="age" required>
+        
+        <label for="Gestation in Weeks">Gestation in previous Pregnancy:</label>
+        <input type="number" id="Gestation in Weeks" name="gestation" required>
+        
+        <label for="BMI">BMI:</label>
+        <input type="number" step="0.01" id="BMI" name="bmi" required>
+        
+        <label for="hdl">HDL:</label>
+        <input type="number" step="0.01" id="hdl" name="hdl" required>
+        
+        <label for="family_history">Family History (0/1):</label>
+        <input type="number" id="family_history" name="family_history" min="0" max="1" required>
+        
+        <label for="pcos">PCOS (0/1):</label>
+        <input type="number" id="pcos" name="pcos" min="0" max="1" required>
+        
+        <label for="dia_bp">Dia BP:</label>
+        <input type="number" step="0.01" id="dia_bp" name="dia_bp" required>
+        
+        <label for="ogtt">OGTT:</label>
+        <input type="number" step="0.01" id="ogtt" name="ogtt" required>
+        
+        <label for="hemoglobin">Hemoglobin:</label>
+        <input type="number" step="0.01" id="hemoglobin" name="hemoglobin" required>
+        
+        <label for="prediabetes">Prediabetes (0/1):</label>
+        <input type="number" id="prediabetes" name="prediabetes" min="0" max="1" required>
+        
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="results">
+        <h2>Results:</h2>
+        <p id="cnn-result"></p>
+        <p id="svm-result"></p>
+        <p id="rf-result"></p>
+        <p id="ensemble-result"></p>
+    </div>
+
+    <script>
+        document.getElementById('input-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const inputs = {
+                age: document.getElementById('Age').value,
+                gestation: document.getElementById('gestation').value,
+                bmi: document.getElementById('bmi').value,
+                hdl: document.getElementById('hdl').value,
+                family_history: document.getElementById('family_history').value,
+                pcos: document.getElementById('pcos').value,
+                dia_bp: document.getElementById('dia_bp').value,
+                ogtt: document.getElementById('ogtt').value,
+                hemoglobin: document.getElementById('hemoglobin').value,
+                prediabetes: document.getElementById('prediabetes').value
+            };
+
+            const response = await axios.post('http://127.0.0.1:5000/predict', { inputs: Object.values(inputs) });
+            const results = response.data;
+
+            document.getElementById('cnn-result').innerText = `CNN Prediction: ${results.cnn_pred}`;
+            document.getElementById('svm-result').innerText = `SVM Prediction: ${results.svm_pred}`;
+            document.getElementById('rf-result').innerText = `Random Forest Prediction: ${results.rf_pred}`;
+            document.getElementById('ensemble-result').innerText = `Ensemble Prediction: ${results.ensemble_pred}`;
+        });
+    </script>
+</body>
+</html>

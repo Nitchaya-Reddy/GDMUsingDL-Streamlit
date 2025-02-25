@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestational Diabetes Mellitus Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles.css')}}">
+</head>
+<body>
+    <header>
+        <h1>Gestational Diabetes Mellitus Detection</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="{{ url_for('static',filename='problem statement.html')}}">Problem Statement</a></li>
+                <li><a href="{{ url_for('static',filename='evaluation.html')}}">Evaluation</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="home_container">
+    <section id="form">
+        <h2>Fill in Your Details</h2>
+        <form method="POST", action="{{url_for('posting')}}">
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required>
+            
+            <label for="gestation">Gestation in previous Pregnancy:</label>
+            <input type="number" id="gestation" name="gestation" required>
+            
+            <label for="bmi">BMI:</label>
+            <input type="number" step="0.01" id="bmi" name="bmi" required>
+            
+            <label for="hdl">HDL:</label>
+            <input type="number" step="0.01" id="hdl" name="hdl" required>
+            
+            <label for="family_history">Family History (0/1):</label>
+            <input type="number" id="family_history" name="family_history" min="0" max="1" required>
+            
+            <label for="pcos">PCOS (0/1):</label>
+            <input type="number" id="pcos" name="pcos" min="0" max="1" required>
+            
+            <label for="dia_bp">Dia BP:</label>
+            <input type="number" step="0.01" id="dia_bp" name="dia_bp" required>
+            
+            <label for="ogtt">OGTT:</label>
+            <input type="number" step="0.01" id="ogtt" name="ogtt" required>
+            
+            <label for="hemoglobin">Hemoglobin:</label>
+            <input type="number" step="0.01" id="hemoglobin" name="hemoglobin" required>
+            
+            <label for="prediabetes">Prediabetes (0/1):</label>
+            <input type="number" id="prediabetes" name="prediabetes" min="0" max="1" required>
+        
+            <input type="submit" value="Submit"><br>
+        </form>
+    </section>
+    </div>
+
+    <br><br><br><br><br><br>
+    
+    <footer>
+        <p>&copy; 2025 Gestational Diabetes Mellitus Model</p>
+    </footer
+</body>
+</html>
