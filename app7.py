@@ -207,7 +207,7 @@ def login():
         css="""
         <style>
             [data-testid="stForm"] {
-                background-color: lightblue;
+                background-color: #E6B2BA;
                 color:black;
                 padding: 20px;
                 border-radius: 10px;
@@ -259,7 +259,7 @@ def signuppage():
         css="""
         <style>
             [data-testid="stForm"] {
-                background-color: lightblue;
+                background-color: #E6B2BA;
                 color:black;
                 padding: 20px;
                 border-radius: 10px;
@@ -312,7 +312,7 @@ def gdmdetector():
 
         <style>
         .stApp {
-                color: black;
+                color:black;
                 text-align: center;
             }
         }'''
@@ -323,7 +323,7 @@ def gdmdetector():
         css="""
         <style>
             [data-testid="stForm"] {
-                background-color: lightblue;
+                background-color: #E6B2BA;
                 color:black;
                 padding: 20px;
                 border-radius: 10px;
@@ -340,7 +340,22 @@ def gdmdetector():
         </style>
         """
         st.write(css, unsafe_allow_html=True)
-        
+        def boxed_textgdm(text):
+            st.markdown(
+                f"""
+                <div style="
+                    border: 2px solid #d3d3d3; 
+                    border-radius: 10px; 
+                    background-color: #f0f0f0; 
+                    padding: 15px; 
+                    font-size: 14px;
+                    font-family: 'Times New Roman', serif;
+                    color: black;">
+                    {text}
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
         age = st.number_input("Age", min_value=0, max_value=120, value=30)
         gestation = st.number_input("Gestation in Weeks", min_value=0, max_value=50, value=0)
         bmi = st.number_input("BMI", min_value=0.0, max_value=100.0, value=25.0)
@@ -356,11 +371,42 @@ def gdmdetector():
             input_data = np.array([[age, gestation, bmi, hdl, family_history, pcos, dia_bp, ogtt, hemoglobin, prediabetes]])
             prediction_result = predict_combined(input_data)
             st.subheader("Prediction Results")
-            st.write(f"Ensemble Model Probability: {prediction_result['ensemble_proba']:.2f}")
-            st.write(f"CNN Model Probability: {prediction_result['cnn_proba']:.2f}")
-            st.write(f"Combined Probability: {prediction_result['combined_proba']:.2f}")
-            st.write(f"Final Prediction: {prediction_result['final_prediction']}")
+            #st.write(f"Ensemble Model Probability: {prediction_result['ensemble_proba']:.2f}")
+            #st.write(f"CNN Model Probability: {prediction_result['cnn_proba']:.2f}")
+            boxed_textgdm(f"GDM Risk Probability: {prediction_result['combined_proba']:.2f}")
+            boxed_textgdm(f"Final Prediction: {prediction_result['final_prediction']}")
+            # Determine risk level
+            if prediction_result['combined_proba'] < 0.3:
+                risk_level = "Low Risk"
+                health_tips = [
+                    "Maintain a balanced diet rich in whole grains, lean proteins, and healthy fats.",
+                    "Engage in regular physical activity like walking or yoga.",
+                    "Stay hydrated and ensure proper sleep.",
+                    "Schedule routine check-ups for overall well-being."
+                ]
+            elif 0.3 <= prediction_result['combined_proba'] <= 0.7:
+                risk_level = "Moderate Risk"
+                health_tips = [
+                    "Monitor blood sugar levels regularly.",
+                    "Reduce processed sugar and carbohydrate intake.",
+                    "Increase fiber intake through fruits and vegetables.",
+                    "Consult a healthcare provider for early intervention strategies."
+                ]
+            else:
+                risk_level = "High Risk"
+                health_tips = [
+                    "Follow a strict meal plan with portion control.",
+                    "Engage in doctor-recommended physical activities.",
+                    "Monitor glucose levels frequently and track changes.",
+                    "Consult a specialist for medical intervention if required."
+                ]
+            
+            st.markdown(f"### Health Tips for {risk_level}")
+            for tip in health_tips:
+                boxed_textgdm(f"- {tip}")
+            # Display prediction results
             st.success(f"Prediction: {prediction_result['final_prediction']}")
+            
             c.execute("INSERT INTO history (username, input_data, result, timestamp) VALUES (?, ?, ?, ?)",(st.session_state.username, str(input_data.tolist()), str(prediction_result['final_prediction']), datetime.now().isoformat()))
             conn.commit()
 
@@ -380,11 +426,11 @@ def dashboard():
             overflow: hidden;
             box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
             text-align: center;
-            background-color: lightblue;
+            background-color: #FAD0C4;
             color:black;
         }
         th {
-            background-color: #4CAF50;
+            background-color: #E6B2BA;
             color: white;
             text-align: center;
             padding: 12px;
@@ -395,7 +441,7 @@ def dashboard():
             text-align: center
         }
         tr:hover {
-            background-color: #f5f5f5;
+            background-color: #FFF7F3;
 
         }
         </style>
@@ -408,7 +454,8 @@ def dashboard():
     df = pd.DataFrame(history, columns=["Input Data", "Result", "Timestamp"])
 
     # Display the styled table
-    st.dataframe(df, use_container_width=True)
+    #st.dataframe(df, use_container_width=True)
+    st.table(df)
     
     if history==[]:
         st.write("No history found.")
@@ -465,7 +512,7 @@ if st.session_state.session_token is None:
     option = option_menu(
             menu_title=None,  # required
             options=["Home", "Login", "Sign Up", "About US"],  # required
-            icons=["house", "login","person_add","envelope"],  # optional
+            icons=["house", "box-arrow-in-right","person-plus","envelope"],  # optional
             menu_icon="cast",  # optional
             default_index=0,  # optional
             orientation="horizontal",
@@ -498,11 +545,12 @@ else:
     option = option_menu(
             menu_title=None,  # required
             options=["Home", "Dashboard", "GDM Detector", "Logout","About US"],  # required
-            icons=["house", "medical_information","health_and_safety","logout", "envelope"],  # optional
+            icons=["house", "speedometer","clipboard-pulse","box-arrow-right", "envelope"],  # optional
             menu_icon="cast",  # optional
             default_index=0,  # optional
             orientation="horizontal",
         )
+    
     if option == "Home":
         home()
     elif option == "About US":
