@@ -2,6 +2,6 @@ numpy
 pandas
 streamlit
 streamlit-option-menu
-tensorflow==2.15.0
+tensorflow==2.16.1
 scikit-learn
 joblib
