@@ -1,11 +1,12 @@
-streamlit==1.24.0  # Example version; use the one you need
-joblib
-pandas
+base64
+hashlib
+pickle
+secrets
+sqlite3
 numpy
-scikit-learn
-matplotlib
-seaborn
-imbalanced-learn
+pandas
+streamlit
+streamlit-option-menu
 tensorflow
-shap
-watchdog>=2.1.9
+scikit-learn
+joblib
