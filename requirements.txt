@@ -1,0 +1,11 @@
+streamlit==1.24.0  # Example version; use the one you need
+joblib
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+imbalanced-learn
+tensorflow
+shap
+watchdog>=2.1.9
