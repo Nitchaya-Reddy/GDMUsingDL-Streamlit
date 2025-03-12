@@ -1,11 +1,7 @@
-streamlit==1.24.0  # Example version; use the one you need
-pandas
 numpy
-matplotlib
-seaborn
-imbalanced-learn
-shap
-watchdog>=2.1.9
+pandas
+streamlit
 streamlit-option-menu
 tensorflow==2.16.1
-
+scikit-learn
+joblib
