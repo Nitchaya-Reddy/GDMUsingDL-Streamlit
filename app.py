@@ -463,13 +463,13 @@ def dashboard():
         c.execute("DELETE FROM history WHERE username = ?", (st.session_state.username,))
         conn.commit()
         st.success("All history cleared.")
-    if st.button("Debug Users Table"):
-        with sqlite3.connect('users1.db') as conn:
-            c = conn.cursor()
-            c.execute("SELECT username, password FROM users")
-            users = c.fetchall()
-            st.write("Users in the database:")
-            st.table(users)
+    #if st.button("Debug Users Table"):
+    #    with sqlite3.connect('users1.db') as conn:
+    #        c = conn.cursor()
+    #        c.execute("SELECT username, password FROM users")
+    #        users = c.fetchall()
+    #        st.write("Users in the database:")
+    #        st.table(users)
 
 def logout():
     clear_session_token(st.session_state.username)

@@ -1,4 +1,4 @@
-streamlit==1.24.0  # Example version; use the one you need
+streamlit
 joblib
 pandas
 numpy
@@ -8,4 +8,4 @@ seaborn
 imbalanced-learn
 tensorflow
 shap
-watchdog>=2.1.9
+watchdog
