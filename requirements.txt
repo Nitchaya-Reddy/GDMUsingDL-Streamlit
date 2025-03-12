@@ -1,13 +1,11 @@
 streamlit==1.24.0  # Example version; use the one you need
-joblib
 pandas
-streamlit
-streamlit-option-menu
-tensorflow==2.16.1
-scikit-learn
+numpy
 matplotlib
 seaborn
 imbalanced-learn
-tensorflow
 shap
 watchdog>=2.1.9
+streamlit-option-menu
+tensorflow==2.16.1
+
