@@ -508,10 +508,12 @@ if 'navigation' not in st.session_state:
     st.session_state.navigation = None
 
 #params = st.query_params()
-# Restore session from query params
+# Restore session from query params (use dict-style access; .get() not supported on all Streamlit versions)
 if st.session_state.session_token is None:
-    #params = st.query_params()
-    session_token = st.query_params.get("session_token", [None])[0]
+    session_token = None
+    if "session_token" in st.query_params:
+        val = st.query_params["session_token"]
+        session_token = (val[0] if isinstance(val, list) else val) if val else None
     if session_token:
         username = get_user_by_session_token(session_token)
         if username:
