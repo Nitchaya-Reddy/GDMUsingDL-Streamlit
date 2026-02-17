@@ -10,7 +10,13 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
-from tensorflow.keras.models import load_model
+
+try:
+    from tensorflow.keras.models import load_model
+    _HAS_TENSORFLOW = True
+except ImportError:
+    load_model = None
+    _HAS_TENSORFLOW = False
 
 # Streamlit App
 st.set_page_config(page_title="GDM Prediction", layout="wide")
@@ -20,7 +26,10 @@ st.set_page_config(page_title="GDM Prediction", layout="wide")
 @st.cache_resource
 def load_resources():
     ensemble_model = pickle.load(open('sources/ensemble_model.pkl', 'rb'))
-    cnn_model = load_model('sources/cnn_model.h5')
+    if _HAS_TENSORFLOW:
+        cnn_model = load_model('sources/cnn_model.h5')
+    else:
+        cnn_model = None
     scaler = joblib.load('sources/scaler.pkl')
     return ensemble_model, cnn_model, scaler
 
@@ -114,18 +123,25 @@ def clear_session_token(username):
     conn.commit()
 
 def predict_combined(input_data, ensemble_weight=0.3, cnn_weight=0.7):
-    """Predict GDM using the ensemble and CNN models."""
+    """Predict GDM using the ensemble and CNN models (CNN only if TensorFlow is available)."""
     input_data_scaled = scaler.transform(input_data)
     ensemble_pred_proba = ensemble_model.predict_proba(input_data_scaled)[0][1]
-    cnn_input = input_data_scaled[..., np.newaxis]
-    cnn_pred_proba = cnn_model.predict(cnn_input, verbose=0)[0][0]
-    combined_proba = (ensemble_weight * ensemble_pred_proba) + (cnn_weight * cnn_pred_proba)
-    final_prediction = "GDM" if combined_proba > 0.5 else "Non-GDM"
+    if cnn_model is not None:
+        cnn_input = input_data_scaled[..., np.newaxis]
+        cnn_pred_proba = cnn_model.predict(cnn_input, verbose=0)[0][0]
+        combined_proba = (ensemble_weight * ensemble_pred_proba) + (cnn_weight * cnn_pred_proba)
+        return {
+            "ensemble_proba": ensemble_pred_proba,
+            "cnn_proba": cnn_pred_proba,
+            "combined_proba": combined_proba,
+            "final_prediction": "GDM" if combined_proba > 0.5 else "Non-GDM",
+        }
+    # Fallback: ensemble only when TensorFlow is not installed
     return {
         "ensemble_proba": ensemble_pred_proba,
-        "cnn_proba": cnn_pred_proba,
-        "combined_proba": combined_proba,
-        "final_prediction": final_prediction
+        "cnn_proba": None,
+        "combined_proba": ensemble_pred_proba,
+        "final_prediction": "GDM" if ensemble_pred_proba > 0.5 else "Non-GDM",
     }
 
 def set_background(png_file):
@@ -371,6 +387,8 @@ def gdmdetector():
             input_data = np.array([[age, gestation, bmi, hdl, family_history, pcos, dia_bp, ogtt, hemoglobin, prediabetes]])
             prediction_result = predict_combined(input_data)
             st.subheader("Prediction Results")
+            if not _HAS_TENSORFLOW:
+                st.info("Using ensemble model only (TensorFlow not installed). For full CNN+ensemble predictions, use Python 3.9–3.13 and install: pip install tensorflow>=2.16.1")
             #st.write(f"Ensemble Model Probability: {prediction_result['ensemble_proba']:.2f}")
             #st.write(f"CNN Model Probability: {prediction_result['cnn_proba']:.2f}")
             boxed_textgdm(f"GDM Risk Probability: {prediction_result['combined_proba']:.2f}")
